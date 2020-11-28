@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../screens/product_detail.dart';
 
 class ProductItem extends StatelessWidget {
   final String id;
@@ -9,24 +10,40 @@ class ProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridTile(
-      child: Image.network(
-        imageUrl,
-        fit: BoxFit.cover,
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
       ),
-      footer: GridTileBar(
-        backgroundColor: Colors.black54,
-        leading: IconButton(
-          icon: Icon(Icons.favorite),
-          onPressed: () {},
-        ),
-        trailing: IconButton(
-          icon: Icon(Icons.shopping_cart),
-          onPressed: () {},
-        ),
-        title: Text(
-          title,
-          textAlign: TextAlign.center,
+      elevation: 5.0,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: GridTile(
+          child: GestureDetector(
+            onTap: () {
+              Navigator.of(context).pushNamed(ProductDetail.routeName, arguments: id);
+            },
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+            ),
+          ),
+          footer: GridTileBar(
+            backgroundColor: Colors.black87,
+            leading: IconButton(
+              icon: Icon(Icons.favorite),
+              color: Theme.of(context).accentColor,
+              onPressed: () {},
+            ),
+            trailing: IconButton(
+              icon: Icon(Icons.shopping_cart),
+              color: Theme.of(context).accentColor,
+              onPressed: () {},
+            ),
+            title: Text(
+              title,
+              textAlign: TextAlign.center,
+            ),
+          ),
         ),
       ),
     );
