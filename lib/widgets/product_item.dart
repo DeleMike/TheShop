@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
+
+import 'package:provider/provider.dart';
 import '../screens/product_detail.dart';
+import '../models/product.dart';
 
 class ProductItem extends StatelessWidget {
-  final String id;
-  final String title;
-  final String imageUrl;
+  // final String id;
+  // final String title;
+  // final String imageUrl;
 
-  ProductItem(this.id, this.title, this.imageUrl);
+  // ProductItem(this.id, this.title, this.imageUrl);
 
   @override
   Widget build(BuildContext context) {
+    final product = Provider.of<Product>(
+      context,
+      listen: false,
+    );
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
@@ -20,19 +27,26 @@ class ProductItem extends StatelessWidget {
         child: GridTile(
           child: GestureDetector(
             onTap: () {
-              Navigator.of(context).pushNamed(ProductDetail.routeName, arguments: id);
+              Navigator.of(context)
+                  .pushNamed(ProductDetail.routeName, arguments: product.id);
             },
             child: Image.network(
-              imageUrl,
+              product.imageUrl,
               fit: BoxFit.cover,
             ),
           ),
           footer: GridTileBar(
             backgroundColor: Colors.black87,
-            leading: IconButton(
-              icon: Icon(Icons.favorite),
-              color: Theme.of(context).accentColor,
-              onPressed: () {},
+            leading: Consumer<Product>(
+              builder: (_, product, __) => IconButton(
+                icon: Icon(
+                  product.isFavorite ? Icons.favorite : Icons.favorite_border,
+                ),
+                color: Theme.of(context).accentColor,
+                onPressed: () {
+                  product.toggleFavoriteStatus();
+                },
+              ),
             ),
             trailing: IconButton(
               icon: Icon(Icons.shopping_cart),
@@ -40,7 +54,7 @@ class ProductItem extends StatelessWidget {
               onPressed: () {},
             ),
             title: Text(
-              title,
+              product.title,
               textAlign: TextAlign.center,
             ),
           ),
