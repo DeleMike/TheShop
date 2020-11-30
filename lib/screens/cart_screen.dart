@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../providers/orders.dart';
 import '../providers/cart.dart';
-import '../screens/orders_screen.dart';
 import '../widgets/cart_item.dart';
 
 class CartScreen extends StatelessWidget {
@@ -46,16 +45,17 @@ class CartScreen extends StatelessWidget {
                     child: Text('ORDER NOW'),
                     onPressed: () {
                       if(cart.items.values.toList().isEmpty){
-                        SnackBar(
-                          content: Text('Order not placed.\nYou do not have items is your cart.'),
-                        );
+                        final snackBar = SnackBar(
+                          content: Text('Order not placed.\nYou do not have items is your cart.'));
+                        Scaffold.of(context).showSnackBar(snackBar);
                       }else{
                         Provider.of<Orders>(context, listen: false).addOrder(
                           cart.items.values.toList(), cart.totalAmount);
                           cart.clear();
-                          SnackBar(
-                          content: Text('Order is placed.\nGo to My Orders to view orders'),
-                        );
+                          final snackBar = SnackBar(
+                          content: Text('Order is placed.\nGo to My Orders to view orders'),);
+
+                        Scaffold.of(context).showSnackBar(snackBar);
                       }
                       
                     },
