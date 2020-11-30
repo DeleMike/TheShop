@@ -13,11 +13,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(
-          value: Products(),
+        ChangeNotifierProvider(
+          create: (ctx) => Products(),
         ),
-        ChangeNotifierProvider.value(
-          value: Cart(),
+        ChangeNotifierProvider(
+          create: (ctx) => Cart(),
         ),
       ],
       child: MaterialApp(
@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
         routes: {
           ProductDetail.routeName: (context) => ProductDetail(),
         },
+        debugShowCheckedModeBanner: false,
       ),
     );
   }
