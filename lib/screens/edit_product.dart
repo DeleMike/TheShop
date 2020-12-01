@@ -47,6 +47,10 @@ class _EditProductState extends State<EditProduct> {
   }
 
   void _saveForm() {
+    final isValid = _formKey.currentState.validate();
+    if (!isValid) {
+      return;
+    }
     _formKey.currentState.save();
     print(_editedProduct.title);
     print(_editedProduct.price);
@@ -58,9 +62,12 @@ class _EditProductState extends State<EditProduct> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Add/Edit Products'),
-      ),
+      appBar: AppBar(title: Text('Add/Edit Products'), actions: [
+        IconButton(
+          onPressed: _saveForm,
+          icon: Icon(Icons.save),
+        ),
+      ]),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -82,6 +89,13 @@ class _EditProductState extends State<EditProduct> {
                       imageUrl: _editedProduct.imageUrl,
                       isFavorite: _editedProduct.isFavorite);
                 },
+                validator: (val) {
+                  if (val.isEmpty) {
+                    return 'Please provide add a title';
+                  } else {
+                    return null;
+                  }
+                },
               ),
               TextFormField(
                 decoration: InputDecoration(labelText: 'Price'),
@@ -100,6 +114,13 @@ class _EditProductState extends State<EditProduct> {
                       imageUrl: _editedProduct.imageUrl,
                       isFavorite: _editedProduct.isFavorite);
                 },
+                validator: (val) {
+                  if (val.isEmpty) {
+                    return 'Please provide a price for the product';
+                  } else {
+                    return null;
+                  }
+                },
               ),
               TextFormField(
                 decoration: InputDecoration(labelText: 'Description'),
@@ -114,6 +135,13 @@ class _EditProductState extends State<EditProduct> {
                       price: _editedProduct.price,
                       imageUrl: _editedProduct.imageUrl,
                       isFavorite: _editedProduct.isFavorite);
+                },
+                validator: (val) {
+                  if (val.isEmpty) {
+                    return 'Please provide add a description';
+                  } else {
+                    return null;
+                  }
                 },
               ),
               Row(
@@ -164,22 +192,17 @@ class _EditProductState extends State<EditProduct> {
                             imageUrl: val,
                             isFavorite: _editedProduct.isFavorite);
                       },
+                      validator: (val) {
+                        if (val.isEmpty) {
+                          return 'Please provide add an image url';
+                        } else {
+                          return null;
+                        }
+                      },
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 35),
-              Container(
-                width: 120,
-                height: 56,
-                child: FittedBox(
-                  child: ElevatedButton.icon(
-                    onPressed: _saveForm,
-                    icon: Icon(Icons.save),
-                    label: Text('Save'),
-                  ),
-                ),
-              )
             ],
           ),
         ),
