@@ -1,6 +1,6 @@
 # Shop
 
-A Flutter project that builds a shop app with its shooping cart and uses the Provider pavkage to manage the app state.
+This Flutter project that builds a shop app that aims solely at user interactions
 
 ## Getting Started
 
