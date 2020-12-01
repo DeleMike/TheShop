@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../models/product.dart';
+import '../providers/products.dart';
 
 class EditProduct extends StatefulWidget {
   static const routeName = '/edit-products';
@@ -25,10 +27,35 @@ class _EditProductState extends State<EditProduct> {
       imageUrl: '',
       isFavorite: false);
 
+  var _isInit = true;
+  var _initVals = {'title': '', 'description': '', 'price': '', 'imageUrl': ''};
+
   @override
   void initState() {
     _imageUrlFocusNode.addListener(_updateImageUrl);
+
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      final productId = ModalRoute.of(context).settings.arguments as String;
+      if (productId != null) {
+        _editedProduct =
+            Provider.of<Products>(context, listen: false).findById(productId);
+        _initVals = {
+          'title': _editedProduct.title,
+          'description': _editedProduct.description,
+          'price': _editedProduct.price.toString(),
+          'imageUrl': '',
+        };
+        _imageUrlController.text =  _editedProduct.imageUrl;
+      }
+    }
+
+    _isInit = false;
+    super.didChangeDependencies();
   }
 
   @override
@@ -42,6 +69,11 @@ class _EditProductState extends State<EditProduct> {
 
   void _updateImageUrl() {
     if (!_imageUrlFocusNode.hasFocus) {
+      if (!_imageUrlController.text.startsWith('http') &&
+          !_imageUrlController.text.startsWith('https')) {
+        return;
+      }
+
       setState(() {});
     }
   }
@@ -52,11 +84,14 @@ class _EditProductState extends State<EditProduct> {
       return;
     }
     _formKey.currentState.save();
-    print(_editedProduct.title);
-    print(_editedProduct.price);
-    print(_editedProduct.description);
-    print(_editedProduct.imageUrl);
-    print(_editedProduct.id);
+    if(_editedProduct.id != null) {
+      //we are editing product
+      Provider.of<Products>(context, listen: false).updateProduct(_editedProduct.id,_editedProduct);
+    }else{
+       Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+    }
+   
+    Navigator.of(context).pop();
   }
 
   @override
@@ -75,6 +110,7 @@ class _EditProductState extends State<EditProduct> {
           child: ListView(
             children: [
               TextFormField(
+                initialValue: _initVals['title'],
                 decoration: InputDecoration(labelText: 'Title'),
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) {
@@ -82,7 +118,7 @@ class _EditProductState extends State<EditProduct> {
                 },
                 onSaved: (val) {
                   _editedProduct = Product(
-                      id: DateTime.now().toString(),
+                      id: _editedProduct.id,
                       title: val,
                       description: _editedProduct.description,
                       price: _editedProduct.price,
@@ -98,6 +134,7 @@ class _EditProductState extends State<EditProduct> {
                 },
               ),
               TextFormField(
+                initialValue: _initVals['price'],
                 decoration: InputDecoration(labelText: 'Price'),
                 textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.number,
@@ -107,7 +144,7 @@ class _EditProductState extends State<EditProduct> {
                 },
                 onSaved: (val) {
                   _editedProduct = Product(
-                      id: DateTime.now().toString(),
+                      id: _editedProduct.id,
                       title: _editedProduct.title,
                       description: _editedProduct.description,
                       price: double.parse(val),
@@ -117,19 +154,27 @@ class _EditProductState extends State<EditProduct> {
                 validator: (val) {
                   if (val.isEmpty) {
                     return 'Please provide a price for the product';
+                  }
+
+                  if (double.tryParse(val) == null) {
+                    return 'Please enter a valid number';
+                  }
+                  if (double.tryParse(val) == 0) {
+                    return 'Please enter an amount greater than 0';
                   } else {
                     return null;
                   }
                 },
               ),
               TextFormField(
+                initialValue: _initVals['description'],
                 decoration: InputDecoration(labelText: 'Description'),
                 maxLines: 3,
                 focusNode: _descriptionFocusNode,
                 keyboardType: TextInputType.multiline,
                 onSaved: (val) {
                   _editedProduct = Product(
-                      id: DateTime.now().toString(),
+                      id: _editedProduct.id,
                       title: _editedProduct.title,
                       description: val,
                       price: _editedProduct.price,
@@ -139,6 +184,9 @@ class _EditProductState extends State<EditProduct> {
                 validator: (val) {
                   if (val.isEmpty) {
                     return 'Please provide add a description';
+                  }
+                  if (val.length < 10) {
+                    return 'Should be at least 10 characters';
                   } else {
                     return null;
                   }
@@ -185,7 +233,7 @@ class _EditProductState extends State<EditProduct> {
                       onFieldSubmitted: (_) => _saveForm(),
                       onSaved: (val) {
                         _editedProduct = Product(
-                            id: DateTime.now().toString(),
+                            id: _editedProduct.id,
                             title: _editedProduct.title,
                             description: _editedProduct.description,
                             price: _editedProduct.price,
@@ -194,7 +242,11 @@ class _EditProductState extends State<EditProduct> {
                       },
                       validator: (val) {
                         if (val.isEmpty) {
-                          return 'Please provide add an image url';
+                          return 'Please provide add an image URL';
+                        }
+                        if (!val.startsWith('http') &&
+                            !val.startsWith('https')) {
+                          return 'Please provide a URL';
                         } else {
                           return null;
                         }
