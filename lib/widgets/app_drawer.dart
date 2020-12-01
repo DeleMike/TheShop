@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../screens/orders_screen.dart';
+import '../screens/user_products.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -21,7 +22,10 @@ class AppDrawer extends StatelessWidget {
                       style: TextStyle(
                           fontFamily: 'Anto',
                           fontSize: 28,
-                          fontWeight: Theme.of(context).primaryTextTheme.headline6.fontWeight,
+                          fontWeight: Theme.of(context)
+                              .primaryTextTheme
+                              .headline6
+                              .fontWeight,
                           fontStyle: Theme.of(context)
                               .primaryTextTheme
                               .headline6
@@ -35,20 +39,38 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-              leading: Icon(Icons.shop, color: Colors.black,),
-              title: Text('Shop'),
-              onTap: () {
-                Navigator.of(context).pushReplacementNamed('/');
-              },),
-
-              Divider(),
-
-              ListTile(
-              leading: Icon(Icons.payment, color: Colors.black,),
-              title: Text('Orders'),
-              onTap: () {
-                Navigator.of(context).pushReplacementNamed(OrdersScreen.routeName);
-              }),
+            leading: Icon(
+              Icons.shop,
+              color: Colors.black,
+            ),
+            title: Text('Shop'),
+            onTap: () {
+              Navigator.of(context).pushReplacementNamed('/');
+            },
+          ),
+          Divider(),
+          ListTile(
+            leading: Icon(
+              Icons.payment,
+              color: Colors.black,
+            ),
+            title: Text('Orders'),
+            onTap: () {
+              Navigator.of(context)
+                  .pushReplacementNamed(OrdersScreen.routeName);
+            },
+          ),
+          Divider(),
+          ListTile(
+            leading: Icon(
+              Icons.edit,
+              color: Colors.black,
+            ),
+            title: Text('Manage Products'),
+            onTap: () {
+              Navigator.of(context).pushReplacementNamed(UserProduct.routeName);
+            },
+          ),
         ],
       ),
     );
