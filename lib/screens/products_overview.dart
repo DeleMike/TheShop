@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import '../widgets/badge.dart';
 import '../widgets/app_drawer.dart';
 import '../providers/cart.dart';
+import '../providers/products.dart';
 import '../widgets/products_grid.dart';
+import '../widgets/loading.dart';
 import '../screens/cart_screen.dart';
 
 enum FilterOptions {
@@ -19,6 +21,22 @@ class ProductsOverview extends StatefulWidget {
 
 class _ProductsOverviewState extends State<ProductsOverview> {
   var _showOnlyFavorites = false;
+  var _isLoading = false;
+
+  @override
+  void initState() {
+    setState(() {
+      _isLoading = true;
+    });
+
+    Provider.of<Products>(context, listen: false)
+        .fetchAndSetProducts()
+        .then((_) => setState(() {
+              _isLoading = false;
+            }));
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,7 +81,7 @@ class _ProductsOverviewState extends State<ProductsOverview> {
           ),
         ],
       ),
-      body: ProductsGrid(_showOnlyFavorites),
+      body: _isLoading ? Loading(): ProductsGrid(_showOnlyFavorites),
       drawer: AppDrawer(),
     );
   }

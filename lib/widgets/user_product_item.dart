@@ -12,36 +12,45 @@ class UserProductItem extends StatelessWidget {
   UserProductItem(this.id, this.title, this.imageUrl);
   @override
   Widget build(BuildContext context) {
+    final scaffold = Scaffold.of(context);
     return InkWell(
-      onTap: (){},
+      onTap: () {},
       splashColor: Theme.of(context).accentColor.withOpacity(0.2),
-          child: ListTile(
-          title: Text(title),
-          leading: CircleAvatar(
-      backgroundImage: NetworkImage(imageUrl),
-          ),
-          trailing: Container(
-      width: 100,
-      child: Row(
-        children: [
-          IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: () {
-              Navigator.of(context).pushNamed(EditProduct.routeName, arguments: id);
-            },
-            color: Theme.of(context).primaryColor,
-          ),
-          IconButton(
-            icon: Icon(Icons.delete),
-            onPressed: () {
-              Provider.of<Products>(context, listen: false).deleteProduct(id);
-            },
-            color: Theme.of(context).errorColor,
-          ),
-        ],
-      ),
+      child: ListTile(
+        title: Text(title),
+        leading: CircleAvatar(
+          backgroundImage: NetworkImage(imageUrl),
+        ),
+        trailing: Container(
+          width: 100,
+          child: Row(
+            children: [
+              IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () {
+                  Navigator.of(context)
+                      .pushNamed(EditProduct.routeName, arguments: id);
+                },
+                color: Theme.of(context).primaryColor,
+              ),
+              IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () async {
+                  try {
+                    await Provider.of<Products>(context, listen: false)
+                        .deleteProduct(id);
+                  } catch (error) {
+                    scaffold.showSnackBar(SnackBar(
+                      content: Text('Deleting failed', textAlign: TextAlign.center,),
+                    ));
+                  }
+                },
+                color: Theme.of(context).errorColor,
+              ),
+            ],
           ),
         ),
+      ),
     );
   }
 }
