@@ -4,18 +4,15 @@ import 'package:provider/provider.dart';
 import '../screens/product_detail.dart';
 import '../models/product.dart';
 import '../providers/cart.dart';
+import '../providers/products.dart';
 
 class ProductItem extends StatelessWidget {
-  // final String id;
-  // final String title;
-  // final String imageUrl;
-
-  // ProductItem(this.id, this.title, this.imageUrl);
 
   @override
   Widget build(BuildContext context) {
-    final product = Provider.of<Product>(context, listen: false);
+    final _product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
+    final productData = Provider.of<Products>(context, listen: false);
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
@@ -27,10 +24,10 @@ class ProductItem extends StatelessWidget {
           child: GestureDetector(
             onTap: () {
               Navigator.of(context)
-                  .pushNamed(ProductDetail.routeName, arguments: product.id);
+                  .pushNamed(ProductDetail.routeName, arguments: _product.id);
             },
             child: Image.network(
-              product.imageUrl,
+              _product.imageUrl,
               fit: BoxFit.cover,
             ),
           ),
@@ -43,7 +40,8 @@ class ProductItem extends StatelessWidget {
                 ),
                 color: Theme.of(context).accentColor,
                 onPressed: () {
-                  product.toggleFavoriteStatus();
+                  var val = product.toggleFavoriteStatus();
+                  productData.updateFavoriteStatus(_product.id, _product, val);
                 },
               ),
             ),
@@ -51,7 +49,7 @@ class ProductItem extends StatelessWidget {
               icon: Icon(Icons.shopping_cart),
               color: Theme.of(context).accentColor,
               onPressed: () {
-                cart.addItem(product.id, product.price, product.title);
+                cart.addItem(_product.id, _product.price, _product.title);
                 Scaffold.of(context).hideCurrentSnackBar();
                 Scaffold.of(context).showSnackBar(
                   SnackBar(
@@ -60,7 +58,7 @@ class ProductItem extends StatelessWidget {
                     action: SnackBarAction(
                       label: 'UNDO',
                       onPressed: () {
-                        cart.removeSingleItem(product.id);
+                        cart.removeSingleItem(_product.id);
                       },
                     ),
                   ),
@@ -68,7 +66,7 @@ class ProductItem extends StatelessWidget {
               },
             ),
             title: Text(
-              product.title,
+              _product.title,
               textAlign: TextAlign.center,
             ),
           ),

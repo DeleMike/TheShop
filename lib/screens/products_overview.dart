@@ -25,10 +25,7 @@ class _ProductsOverviewState extends State<ProductsOverview> {
 
   @override
   void initState() {
-    setState(() {
       _isLoading = true;
-    });
-
     Provider.of<Products>(context, listen: false)
         .fetchAndSetProducts()
         .then((_) => setState(() {

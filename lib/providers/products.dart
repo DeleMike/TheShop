@@ -55,16 +55,6 @@ class Products with ChangeNotifier {
     return _items.where((product) => product.isFavorite).toList();
   }
 
-  // void showFavoritesOnly() {
-  //   _showFavoritesOnly = true;
-  //   notifyListeners();
-  // }
-
-  // void showAll() {
-  //   _showFavoritesOnly = false;
-  //   notifyListeners();
-  // }
-
   Product findById(String id) {
     return _items.firstWhere((product) => product.id == id);
   }
@@ -75,6 +65,9 @@ class Products with ChangeNotifier {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       final List<Product> loadedProducts = [];
+      if(extractedData == null) {
+        return;
+      }
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
           id: prodId,
@@ -143,6 +136,30 @@ class Products with ChangeNotifier {
             }));
 
         _items[prodIndex] = newProduct;
+        notifyListeners();
+      } catch (error) {
+        print(error);
+        throw error;
+      }
+    } else {
+      print('product does not exist');
+    }
+  }
+
+  Future<void> updateFavoriteStatus(
+      String id, Product product, bool isFav) async {
+    final prodIndex = _items.indexWhere((prod) => prod.id == id);
+    //var existingProduct = _items[prodIndex];
+
+    if (prodIndex >= 0) {
+      final url = 'https://the--shop.firebaseio.com/products/$id.json';
+
+      try {
+        await http.patch(url,
+            body: json.encode({
+              'isFavorite': isFav,
+            }));
+        _items[prodIndex] = product;
         notifyListeners();
       } catch (error) {
         print(error);
