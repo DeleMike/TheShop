@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../screens/product_detail.dart';
 import '../models/product.dart';
 import '../providers/cart.dart';
+import '../providers/auth.dart';
 import '../providers/products.dart';
 
 class ProductItem extends StatelessWidget {
@@ -13,6 +14,7 @@ class ProductItem extends StatelessWidget {
     final _product = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
     final productData = Provider.of<Products>(context, listen: false);
+    final authData = Provider.of<Auth>(context, listen: false);
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
@@ -41,7 +43,7 @@ class ProductItem extends StatelessWidget {
                 color: Theme.of(context).accentColor,
                 onPressed: () {
                   var val = product.toggleFavoriteStatus();
-                  productData.updateFavoriteStatus(_product.id, _product, val);
+                  productData.updateFavoriteStatus(_product.id, _product, val, authData.userId);
                 },
               ),
             ),

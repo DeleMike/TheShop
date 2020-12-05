@@ -45,8 +45,9 @@ class Products with ChangeNotifier {
   // var _showFavoritesOnly = false;
 
   final String authToken;
+  final String userId;
 
-  Products(this.authToken, this._items);
+  Products(this.authToken, this.userId, this._items);
 
   List<Product> get items {
     // if(_showFavoritesOnly) {
@@ -64,14 +65,18 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
-    final url = 'https://the--shop.firebaseio.com/products.json?auth=$authToken';
+    var url = 'https://the--shop.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
-      final List<Product> loadedProducts = [];
       if (extractedData == null) {
         return;
       }
+       url = 'https://the--shop.firebaseio.com/userFavorites/$userId.json?auth=$authToken';
+
+       final favoriteResponse = await http.get(url);
+       final favoriteData = json.decode(favoriteResponse.body);
+       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
           id: prodId,
@@ -79,7 +84,7 @@ class Products with ChangeNotifier {
           description: prodData['description'],
           price: prodData['price'],
           imageUrl: prodData['imageUrl'],
-          isFavorite: prodData['isFavorite'],
+          isFavorite: favoriteData == null ? false : favoriteData[prodId] ?? false,
         ));
       });
       _items = loadedProducts;
@@ -103,7 +108,6 @@ class Products with ChangeNotifier {
           'description': product.description,
           'imageUrl': product.imageUrl,
           'price': product.price,
-          'isFavorite': product.isFavorite,
         }),
       );
 
@@ -151,17 +155,17 @@ class Products with ChangeNotifier {
   }
 
   Future<void> updateFavoriteStatus(
-      String id, Product product, bool isFav) async {
+      String id, Product product, bool isFav, String userId) async {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     //var existingProduct = _items[prodIndex];
 
     if (prodIndex >= 0) {
-      final url = 'https://the--shop.firebaseio.com/products/$id.json?auth=$authToken';
+      final url = 'https://the--shop.firebaseio.com/userFavorites/$userId/$id.json?auth=$authToken';
 
       try {
-        await http.patch(url,
+        await http.put(url,
             body: json.encode({
-              'isFavorite': isFav,
+              isFav,
             }));
         _items[prodIndex] = product;
         notifyListeners();
