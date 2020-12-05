@@ -10,6 +10,7 @@ import './screens/cart_screen.dart';
 import './providers/orders.dart';
 import './screens/user_products.dart';
 import './screens/edit_product.dart';
+import './screens/splash_screen.dart';
 import './screens/auth_screen.dart';
 import './screens/orders_screen.dart';
 
@@ -25,7 +26,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProxyProvider<Auth, Products>(
           create: null,
-          update: (ctx, auth, previousProducts) => Products(auth.token, auth.userId,
+          update: (ctx, auth, previousProducts) => Products(
+              auth.token,
+              auth.userId,
               previousProducts == null ? [] : previousProducts.items),
         ),
         ChangeNotifierProvider(
@@ -33,8 +36,8 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProxyProvider<Auth, Orders>(
           create: null,
-          update: (ctx, auth, previousOrders) => Orders(
-              auth.token, auth.userId, previousOrders == null ? [] : previousOrders.orders),
+          update: (ctx, auth, previousOrders) => Orders(auth.token, auth.userId,
+              previousOrders == null ? [] : previousOrders.orders),
         ),
       ],
       child: Consumer<Auth>(
@@ -45,7 +48,16 @@ class MyApp extends StatelessWidget {
             accentColor: Colors.deepOrange,
             fontFamily: 'Lato',
           ),
-          home: auth.isAuth ? ProductsOverview() : AuthScreen(),
+          home: auth.isAuth
+              ? ProductsOverview()
+              : FutureBuilder(
+                  future: auth.tryAutoLogin(),
+                  builder: (ctx, authDataSnapshot) =>
+                      authDataSnapshot.connectionState ==
+                              ConnectionState.waiting
+                          ? SplashScreen()
+                          : AuthScreen(),
+                ),
           routes: {
             ProductsOverview.routeName: (context) => ProductsOverview(),
             ProductDetail.routeName: (context) => ProductDetail(),
