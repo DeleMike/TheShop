@@ -9,12 +9,16 @@ import '../models/cart_item.dart';
 class Orders with ChangeNotifier {
   List<Order> _orders = [];
 
+  final String authToken;
+
+  Orders(this.authToken, this._orders);
+
   List<Order> get orders {
     return [..._orders];
   }
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
-    const url = 'https://the--shop.firebaseio.com/orders.json';
+    final url = 'https://the--shop.firebaseio.com/orders.json?auth=$authToken';
 
     final timeStamp = DateTime.now();
 
@@ -42,7 +46,7 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> fetchAndSetOrders() async {
-    const url = 'https://the--shop.firebaseio.com/orders.json';
+    final url = 'https://the--shop.firebaseio.com/orders.json?auth=$authToken';
 
     final response = await http.get(url);
     final List<Order> loadedOrders = [];
