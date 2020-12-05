@@ -163,10 +163,10 @@ class Products with ChangeNotifier {
       final url = 'https://the--shop.firebaseio.com/userFavorites/$userId/$id.json?auth=$authToken';
 
       try {
-        await http.put(url,
-            body: json.encode({
+         await http.put(url,
+            body: json.encode(
               isFav,
-            }));
+            ));
         _items[prodIndex] = product;
         notifyListeners();
       } catch (error) {
