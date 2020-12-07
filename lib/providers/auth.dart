@@ -14,8 +14,7 @@ class Auth with ChangeNotifier {
   String _userId;
   Timer _authTimer;
   static const String userDataKey = 'userData';
-  final apiKey = FlutterConfig.get('API_KEY');
-  final apiUrl = FlutterConfig.get('API_URL');
+  
 
   bool get isAuth {
     return token != null;
@@ -38,6 +37,10 @@ class Auth with ChangeNotifier {
 
   Future<void> _authenticate(
       String email, String password, String urlSegment) async {
+        final apiKey = FlutterConfig.get('API_KEY');
+  final apiUrl = FlutterConfig.variables['API_URL'];
+  print('ApiUrl: $apiUrl');
+  print('ApiKey: $apiKey');
     final url ='$apiUrl$urlSegment?key=$apiKey';
     
     try {
@@ -71,6 +74,7 @@ class Auth with ChangeNotifier {
       });
       prefs.setString(userDataKey, userData);
     } catch (error) {
+      print('Error: $error');
       throw (error);
     }
   }
