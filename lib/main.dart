@@ -25,8 +25,6 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final apiUrl = FlutterConfig.variables;
-    print(apiUrl);
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
