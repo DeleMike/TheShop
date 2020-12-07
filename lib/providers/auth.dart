@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
+import 'package:flutter_config/flutter_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -13,6 +14,8 @@ class Auth with ChangeNotifier {
   String _userId;
   Timer _authTimer;
   static const String userDataKey = 'userData';
+  final apiKey = FlutterConfig.get('API_KEY');
+  final apiUrl = FlutterConfig.get('API_URL');
 
   bool get isAuth {
     return token != null;
@@ -35,8 +38,8 @@ class Auth with ChangeNotifier {
 
   Future<void> _authenticate(
       String email, String password, String urlSegment) async {
-    final url =
-        'https://identitytoolkit.googleapis.com/v1/accounts:$urlSegment?key=AIzaSyBIpY3WEo-Nayy9Dm8wY70quqxiWr0Ihug';
+    final url ='$apiUrl$urlSegment?key=$apiKey';
+    
     try {
       final response = await http.post(
         url,
